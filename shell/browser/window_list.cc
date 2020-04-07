@@ -93,10 +93,12 @@ void WindowList::RemoveObserver(WindowListObserver* observer) {
 // static
 void WindowList::CloseAllWindows() {
   WindowVector windows = GetInstance()->windows_;
+  std::vector<base::WeakPtr<NativeWindow>> weak_windows =
+      ConvertToWeakPtrVector(windows);
 #if defined(OS_MACOSX)
-  std::reverse(windows.begin(), windows.end());
+  std::reverse(weak_windows.begin(), weak_windows.end());
 #endif
-  for (auto* const& window : windows) {
+  for (const auto& window : weak_windows) {
     if (window && !window->IsClosed())
       window->Close();
   }
